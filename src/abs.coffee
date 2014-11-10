@@ -1,1 +1,7 @@
-abs = () -> console.log 'mock'
+Rx = require 'rx'
+
+
+abs = (config) -> (recipe) ->
+
+
+module.exports = abs

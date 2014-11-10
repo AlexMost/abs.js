@@ -17,8 +17,10 @@
   },
   "homepage": "https://github.com/AlexMost/abs.js",
   "dependencies": {
+    "lodash": "^2.4.1",
     "recipe": "^0.1.2",
-    "recipejs": "0.0.8"
+    "recipejs": "0.0.8",
+    "rx": "^2.3.14"
   },
   "devDependencies": {
     "gulp": "^3.8.10",
