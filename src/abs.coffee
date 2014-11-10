@@ -1,0 +1,1 @@
+abs = () -> console.log 'mock'
