@@ -2,6 +2,7 @@ coffee = require 'gulp-coffee'
 concat = require 'gulp-concat'
 gulp = require 'gulp'
 header = require 'gulp-header'
+abs = require '../src/abs'
 
 ###
 config structure
@@ -31,6 +32,7 @@ adapters =
 
 config =
     compilers: compilers
+
     adapters: adapters
 
     modules:
@@ -48,3 +50,6 @@ config =
                 stream
                 .pipe(concat())
                 .pipe(gulp.dest('./tmp'))
+
+
+abs(config)("./test/fixtures/recipe_data.yaml")
