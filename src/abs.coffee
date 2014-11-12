@@ -4,35 +4,53 @@ parse_config = require './config_parser'
 {liftCbToRx} = require './lib'
 
 
-module_to_observable = (config, recipe, mod) ->
-	console.log '----- module -------', mod.name
+module_to_observable = (config) -> (recipe) -> (mod) ->
+	console.log "---- module ----", mod.name
 	Rx.Observable.create (observer) ->
-		observer.onNext mod
-		observer.onCompleted()
+		if mod.name is "module1"
+			setTimeout(
+				->
+					observer.onNext mod
+					observer.onCompleted()
+				2000
+			)
+		else
+			observer.onNext mod
+			observer.onCompleted()
 
 
-abs = (config) -> (recipe_path) ->
+get_modules_source = (config, recipe) ->
+	Rx.Observable
+	  .fromArray(recipe.modules)
+	  .flatMap(module_to_observable(config)(recipe))
 
-	config_source = Rx.Observable.return (parse_config config)
-	recipe_source = (liftCbToRx get_recipe_data) recipe_path
-	config_and_recipe_source = Rx.Observable.concat(config_source, recipe_source).toArray().first()
 
-	modules_source = config_and_recipe_source.map(([config, recipe]) ->
+bundle_to_observable = (modules_source) -> (bundle) ->
+	modules_source.filter((m) -> m.name in bundle.modules)
+				  .take(bundle.modules.length)
+	              .toArray()
 
-		modules = recipe.modules.map (m) ->
-			module_to_observable config, recipe, m
 
-		Rx.Observable.fromArray(modules))
-		.flatMap((x) -> x).concatAll()
+get_bundles_source = (config, recipe, modules_source) ->
+	Rx.Observable.fromArray(recipe.bundles)
+				 .flatMap(bundle_to_observable(modules_source))
 
-	bundles_source = Rx.Observable.fromArray(
-		recipe_source.map((r) -> r.bundles).first())
 
-	modules_source.subscribe(
-		(m) -> console.log m
+abs_build = (config, recipe) ->
+	modules_source = get_modules_source(config, recipe)
+	bundles_source = get_bundles_source(config, recipe, modules_source)
+	bundles_source.subscribe(
+		(b) ->
+			console.log (new Date()).toString()
+			console.log b
 		(er) -> console.log 'err', er
 		() -> console.log 'done'
 	)
+
+abs = (raw_config) -> (recipe_path) ->
+	config = parse_config raw_config
+	get_recipe_data recipe_path, (err, recipe) ->
+		abs_build config, recipe
 
 
 module.exports = abs

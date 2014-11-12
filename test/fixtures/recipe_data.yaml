@@ -5,6 +5,9 @@ modules:
     module1: ["./some/path/file.coffee", cj_file]
     module2: ["./some/path/file2.coffee", cj_file, [module1]]
     module3: ["./some/path/file3.coffee", cj_file, [module1]]
+    module4: ["./some/path/file4.coffee", cj_file]
+    module5: ["./some/path/file5.coffee", cj_file]
+    module6: ["./some/path/file6.coffee", cj_file]
 
 bundles:
     bundle1:
@@ -12,3 +15,8 @@ bundles:
             - module1
             - module2
             - module3
+
+    bundle2:
+        modules:
+            - module4
+            - module5
