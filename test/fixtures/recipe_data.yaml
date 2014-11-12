@@ -20,3 +20,4 @@ bundles:
         modules:
             - module4
             - module5
+            - module1

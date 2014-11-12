@@ -7,7 +7,7 @@ parse_config = require './config_parser'
 module_to_observable = (config) -> (recipe) -> (mod) ->
     console.log "---- module ----", mod.name
     Rx.Observable.create (observer) ->
-        if mod.name is "module1"
+        if mod.name is "module4"
             setTimeout(
                 ->
                     observer.onNext mod
@@ -19,33 +19,25 @@ module_to_observable = (config) -> (recipe) -> (mod) ->
             observer.onCompleted()
 
 
-get_modules_source = (config, recipe) ->
-    Rx.Observable
-      .fromArray(recipe.modules)
-      .flatMap(module_to_observable(config)(recipe))
-
-
-bundle_to_observable = (modules_source) -> (bundle) ->
-    modules_source.filter((m) -> m.name in bundle.modules)
-                  .take(bundle.modules.length)
-                  .toArray()
-
-
-get_bundles_source = (config, recipe, modules_source) ->
-    Rx.Observable.fromArray(recipe.bundles)
-                 .flatMap(bundle_to_observable(modules_source))
-
-
 abs_build = (config, recipe) ->
-    modules_source = get_modules_source(config, recipe)
-    bundles_source = get_bundles_source(config, recipe, modules_source)
-    bundles_source.subscribe(
-        (b) ->
-            console.log (new Date()).toString()
-            console.log b
-        (er) -> console.log 'err', er
-        () -> console.log 'done'
+    modules_source = Rx.Observable
+                       .fromArray(recipe.modules)
+                       .flatMap(module_to_observable(config)(recipe))
+
+    compiled_modules_stream = new Rx.Subject()
+
+    recipe.bundles.map (bundle) ->
+        compiled_modules_stream
+            .filter((m) -> m.name in bundle.modules)
+            .bufferWithCount(bundle.modules.length)
+            .first()
+            .subscribe((r) -> console.log r)
+
+    modules_source.subscribe(
+        (b) -> compiled_modules_stream.onNext(b)
+        (err) -> compiled_modules_stream.onError err
     )
+
 
 abs = (raw_config) -> (recipe_path) ->
     config = parse_config raw_config
