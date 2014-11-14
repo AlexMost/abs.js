@@ -4,6 +4,8 @@ parse_config = require './config_parser'
 {get_recipe_data} = require 'recipejs'
 {process_module} = require './module'
 
+any_module_changed = (modules) ->
+    l.any modules.map((m) -> m.is_changed)
 
 abs_build = (config, recipe) ->
     _process_module = l.partial process_module, config
@@ -11,7 +13,7 @@ abs_build = (config, recipe) ->
     modules_source = Rx.Observable
                        .fromArray(recipe.modules)
                        .flatMap(_process_module)
-    
+
     compiled_modules_stream = new Rx.Subject()
 
     recipe.bundles.map (bundle) ->
@@ -19,6 +21,7 @@ abs_build = (config, recipe) ->
             .filter((m) -> m.name in bundle.modules)
             .bufferWithCount(bundle.modules.length)
             .first()
+            .filter(any_module_changed)
             .subscribe(
                 (r) -> console.log r
                 (err) -> console.log "[Err]", err)

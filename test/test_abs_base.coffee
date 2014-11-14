@@ -11,7 +11,11 @@ Later will be decomposed into small parts.
 ###
 
 single_file_adapter =
-    was_changed: (module, cb) -> cb null, true
+    was_changed: (module, cb) ->
+        if module.name in ["module4", "module5"]
+            cb null, false
+        else
+            cb null, true
     get_files: (module, cb) -> cb null, [module.path]
 
 
