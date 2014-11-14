@@ -2,12 +2,12 @@ abstract:
     version: 1
 
 modules:
-    module1: ["./some/path/file.coffee", cj_file]
-    module2: ["./some/path/file2.coffee", cj_file, [module1]]
-    module3: ["./some/path/file3.coffee", cj_file, [module1]]
-    module4: ["./some/path/file4.coffee", cj_file]
-    module5: ["./some/path/file5.coffee", cj_file]
-    module6: ["./some/path/file6.coffee", cj_file]
+    module1: ["./some/path/file.coffee", single_file]
+    module2: ["./some/path/file2.coffee", single_file, [module1]]
+    module3: ["./some/path/file3.coffee", single_file, [module1]]
+    module4: ["./some/path/file4.coffee", single_file]
+    module5: ["./some/path/file5.coffee", single_file]
+    module6: ["./some/path/file6.coffee", single_file]
 
 bundles:
     bundle1:

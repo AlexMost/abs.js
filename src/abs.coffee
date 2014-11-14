@@ -1,29 +1,17 @@
 Rx = require 'rx'
+l = require 'lodash'
 parse_config = require './config_parser'
 {get_recipe_data} = require 'recipejs'
-{liftCbToRx} = require './lib'
-
-
-module_to_observable = (config) -> (recipe) -> (mod) ->
-    console.log "---- module ----", mod.name
-    Rx.Observable.create (observer) ->
-        if mod.name is "module4"
-            setTimeout(
-                ->
-                    observer.onNext mod
-                    observer.onCompleted()
-                2000
-            )
-        else
-            observer.onNext mod
-            observer.onCompleted()
+{process_module} = require './module'
 
 
 abs_build = (config, recipe) ->
+    _process_module = l.partial process_module, config
+
     modules_source = Rx.Observable
                        .fromArray(recipe.modules)
-                       .flatMap(module_to_observable(config)(recipe))
-
+                       .flatMap(_process_module)
+    
     compiled_modules_stream = new Rx.Subject()
 
     recipe.bundles.map (bundle) ->
@@ -31,7 +19,9 @@ abs_build = (config, recipe) ->
             .filter((m) -> m.name in bundle.modules)
             .bufferWithCount(bundle.modules.length)
             .first()
-            .subscribe((r) -> console.log r)
+            .subscribe(
+                (r) -> console.log r
+                (err) -> console.log "[Err]", err)
 
     modules_source.subscribe(
         (b) -> compiled_modules_stream.onNext(b)
