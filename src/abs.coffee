@@ -4,12 +4,14 @@ parse_config = require './config_parser'
 {get_recipe_data} = require 'recipejs'
 {process_module} = require './module'
 
+
 any_module_changed = (modules) ->
-    l.any modules.map((m) -> m.is_changed)
+    l.any modules.map (m) -> m.is_changed
+
 
 abs_build = (config, recipe) ->
-    _process_module = l.partial process_module, config
 
+    _process_module = l.partial process_module, config
     modules_source = Rx.Observable
                        .fromArray(recipe.modules)
                        .flatMap(_process_module)
