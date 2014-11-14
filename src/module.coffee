@@ -1,5 +1,14 @@
+path = require 'path'
 Rx = require 'rx'
+gulp = require 'gulp'
+through = require 'through2'
+{fromStream} = require Rx.Node
+l = require 'lodash'
 
+
+default_compiler =
+    name: "default"
+    cast: (stream) -> stream
 
 get_is_module_changed = (module, adapter) ->
     Rx.Observable.create (observer) ->
@@ -19,6 +28,7 @@ get_module_files = (module, adapter) ->
             else
                 observer.onNext files
                 observer.onCompleted()    
+
 
 
 process_module = (config, module) ->
@@ -45,6 +55,40 @@ process_module = (config, module) ->
         )
 
 
-module.exports = {process_module}
+get_compiler = (config, file) ->
+    file_ext = path.extname file
+    compilers = l.filter config.compilers, (compiler) ->
+        if l.isArray compiler.ext
+            file_ext in compiler.ext
+        else
+            file_ext is compiler.ext
+    (l.first compilers) or default_compiler
+
+
+run_gulp_task = (sequence) -> (file) ->
+    Rx.Observable.create((obs)->
+        stream = through.obj()
+        sequence(stream)
+        .on('data', (data) ->
+            obs.onNext data
+            obs.onCompleted()
+        )
+        stream.write file
+    )
+
+
+compile_file = (config, file) ->
+    compiler = get_compiler config, file
+    file_source.map(run_gulp_task compiler.cast)
+
+
+compile_modules = (config, modules) ->
+    Rx.Observable.create (observer) ->
+        observer.onNext modules
+        observer.onCompleted()
+
+
+module.exports = {
+    process_module, compile_modules, get_compiler, compile_file}
 
 

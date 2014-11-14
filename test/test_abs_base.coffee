@@ -1,8 +1,10 @@
+path = require 'path'
 coffee = require 'gulp-coffee'
 concat = require 'gulp-concat'
 gulp = require 'gulp'
 header = require 'gulp-header'
 abs = require '../src/abs'
+
 
 ###
 config structure
@@ -12,22 +14,27 @@ Later will be decomposed into small parts.
 
 single_file_adapter =
     was_changed: (module, cb) ->
-        if module.name in ["module4", "module5"]
-            cb null, false
-        else
-            cb null, true
-    get_files: (module, cb) -> cb null, [module.path]
+        path = require 'path'
+        # XXX hardcoded recipe path
+        cb null, true
+
+    get_files: (module, cb) ->
+        file_real_path = path.resolve './test/fixtures/', module.path
+        cb null, [file_real_path]
 
 
-compilers =
-    default:
+compilers =[
+    {
+        name: "js"
         ext: ".js"
         cast: (stream) -> stream
-
-    coffee:
+    }
+    {
+        name: "coffee"
         ext: ".coffee"
-        cast: (stream) ->
-            stream.pipe(coffee())
+        cast: (stream) -> stream.pipe(coffee())
+    }
+]
 
 adapters =
     single_file: single_file_adapter

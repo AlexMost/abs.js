@@ -1,5 +1,6 @@
 Rx = require 'rx'
 
+
 liftCbToRx = (f) ->
 	###
 	Lifts function with callback to Rx observable.

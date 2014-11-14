@@ -20,7 +20,8 @@
     "lodash": "^2.4.1",
     "recipe": "^0.1.2",
     "recipejs": "0.0.8",
-    "rx": "^2.3.14"
+    "rx": "^2.3.14",
+    "through2": "^0.6.3"
   },
   "devDependencies": {
     "gulp": "^3.8.10",

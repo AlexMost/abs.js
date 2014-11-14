@@ -3,6 +3,7 @@ l = require 'lodash'
 parse_config = require './config_parser'
 {get_recipe_data} = require 'recipejs'
 {process_module} = require './module'
+{process_bundle} = require './bundle'
 
 
 any_module_changed = (modules) ->
