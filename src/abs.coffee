@@ -2,7 +2,7 @@ Rx = require 'rx'
 l = require 'lodash'
 parse_config = require './config_parser'
 {get_recipe_data} = require 'recipejs'
-{process_module} = require './module'
+{process_module, compile_modules} = require './module'
 {process_bundle} = require './bundle'
 
 
@@ -25,6 +25,7 @@ abs_build = (config, recipe) ->
             .bufferWithCount(bundle.modules.length)
             .first()
             .filter(any_module_changed)
+            .map(compile_modules)
             .subscribe(
                 (r) -> console.log r
                 (err) -> console.log "[Err]", err)

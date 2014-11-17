@@ -2,7 +2,7 @@ path = require 'path'
 Rx = require 'rx'
 gulp = require 'gulp'
 through = require 'through2'
-{fromStream} = require Rx.Node
+{fromStream} = Rx.Node
 l = require 'lodash'
 
 
@@ -79,7 +79,13 @@ run_gulp_task = (sequence) -> (file) ->
 
 compile_file = (config, file) ->
     compiler = get_compiler config, file
+    file_source = gulp.src(file)
     file_source.map(run_gulp_task compiler.cast)
+
+
+compile_module = (config, module) ->
+    module.file_paths.map (file) ->
+        compile_file config, file
 
 
 compile_modules = (config, modules) ->
