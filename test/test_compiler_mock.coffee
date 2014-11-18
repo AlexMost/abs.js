@@ -10,11 +10,10 @@ exports.test_compiler_mock_adds_default_prefix = (test) ->
         .on('data', (file) ->
             old_content = file.contents.toString()
             compiled_content = file.compiled.toString()
-            
+
             test.ok(
                 (prefix + old_content) is compiled_content
                 "Compiled source must contain prefix"
             )
             test.done()
         )
-

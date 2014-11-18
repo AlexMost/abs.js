@@ -1,18 +1,17 @@
 Rx = require 'rx'
+through = require 'through2'
 
 
-liftCbToRx = (f) ->
-	###
-	Lifts function with callback to Rx observable.
-	Works by same logic as simple nodejs style callback functions.
-	###
-
-	(i, idx, obs) ->
-		Rx.Observable.create (observer) ->
-			f i, (err, result) ->
-				(observer.onError err) if err
-				observer.onNext result
-				observer.onCompleted()
+run_gulp_task = (sequence) -> (file) ->
+    Rx.Observable.create((obs)->
+        stream = through.obj()
+        sequence(stream)
+        .on('data', (data) ->
+            obs.onNext data
+            obs.onCompleted()
+        )
+        stream.write file
+    )
 
 
-module.exports = {liftCbToRx}
+module.exports = {run_gulp_task}

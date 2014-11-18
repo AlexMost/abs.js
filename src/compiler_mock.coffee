@@ -1,4 +1,5 @@
 # Simple compiler mock for testing gulp tasks
+# Lightweight implementation of gulp header
 through = require('through2')
 
 module.exports = (opt) ->
@@ -16,4 +17,5 @@ module.exports = (opt) ->
     data = prefix + str
     file.compiled = new Buffer(data);
     cb(null, file)
+  
   through.obj transform
