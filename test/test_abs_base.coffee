@@ -12,6 +12,7 @@ Temporary mock config for building prototype.
 Later will be decomposed into small parts.
 ###
 
+
 single_file_adapter =
     was_changed: (module, cb) ->
         path = require 'path'
@@ -36,9 +37,20 @@ compilers =[
     }
 ]
 
+
 adapters =
     single_file: single_file_adapter
     commonjs_file: single_file_adapter
+
+
+modules =
+    single_file: (stream) ->
+            stream
+            .pipe(header('single_file\n'))
+
+    commonjs_file: (stream, module) ->
+        stream
+        .pipe(header("commonjs file #{module.name}\n"))
 
 
 config =
@@ -46,14 +58,7 @@ config =
 
     adapters: adapters
 
-    modules:
-        single_file: (stream) ->
-            stream
-            .pipe(header('single_file\n'))
-
-        commonjs_file: (stream, module) ->
-            stream
-            .pipe(header("commonjs file #{module.name}\n"))
+    modules: modules
 
     bundles:
         default:

@@ -11,8 +11,8 @@ any_module_changed = (modules) ->
 
 
 abs_build = (config, recipe) ->
-
     _process_module = l.partial process_module, config
+    
     modules_source = Rx.Observable
                        .fromArray(recipe.modules)
                        .flatMap(_process_module)
@@ -25,9 +25,9 @@ abs_build = (config, recipe) ->
             .bufferWithCount(bundle.modules.length)
             .first()
             .filter(any_module_changed)
-            .map(compile_modules)
+            .flatMap(l.partial(compile_modules, config))
             .subscribe(
-                (r) -> #console.log r
+                (r) ->  console.log r
                 (err) -> console.log "[Err]", err)
 
     modules_source.subscribe(

@@ -2,7 +2,7 @@ abstract:
     version: 1
 
 modules:
-    module1: ["./src/file.coffee", single_file]
+    module1: ["./src/file1.coffee", single_file]
     module2: ["./src/file2.coffee", single_file, [module1]]
     module3: ["./src/file3.coffee", single_file, [module1]]
     module4: ["./src/file4.coffee", single_file]
