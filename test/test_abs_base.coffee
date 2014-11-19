@@ -45,8 +45,7 @@ adapters =
 
 modules =
     single_file: (stream) ->
-            stream
-            .pipe(header('single_file\n'))
+        stream.pipe(header('single_file\n'))
 
     commonjs_file: (stream, module) ->
         stream

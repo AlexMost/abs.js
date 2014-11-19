@@ -27,7 +27,7 @@ abs_build = (config, recipe) ->
             .filter(any_module_changed)
             .flatMap(l.partial(compile_modules, config))
             .subscribe(
-                (r) ->  console.log r
+                (r) ->  #console.log r
                 (err) -> console.log "[Err]", err)
 
     modules_source.subscribe(
