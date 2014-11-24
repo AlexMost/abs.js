@@ -135,5 +135,7 @@ exports.test_cast_module = (test) ->
                 "Module cast return's wrong result"
             )
             test.done()
-        (err) -> test.ok "false", "should not fail when casting module"
+        (err) ->
+            test.ok false, "should not fail when casting module"
+            test.done()
     )
