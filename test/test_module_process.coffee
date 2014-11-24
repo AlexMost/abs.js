@@ -120,11 +120,16 @@ exports.test_cast_module = (test) ->
     .subscribe(
         (module) ->
             test.ok(
+                module.casted_module
+                "Must be casted module after module cast")
+
+            test.ok(
                 module.compiled_files.length is 1
-                "Must be only one compiled source file"
-            )
+                "Must be only one compiled source file")
+
             src_content = module.compiled_files[0].contents.toString()
-            compiled = module.compiled_files[0].compiled.toString()
+            compiled = module.casted_module.compiled.toString()
+
             test.ok(
                 (compiled is (cast_prefix + prefix + src_content))
                 "Module cast return's wrong result"

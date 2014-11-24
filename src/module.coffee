@@ -133,11 +133,10 @@ cast_module = (config, module) ->
 
         stream = through.obj()
         fromStream(stream.pipe(module_cast(stream, module)))
-        .bufferWithCount(module.compiled_files.length)
         .first()
         .subscribe(
-            (files) ->
-                module.compiled_files = files
+            (file) ->
+                module.casted_module = file
                 observer.onNext module
                 observer.onCompleted()
             (err) -> observer.onError err
