@@ -54,7 +54,9 @@ exports.test_compile_module = (test) ->
                 "Module file must be with prefix #{prefix}"
             )
             test.done()
-        (err) -> test.ok(false, "Failed to compile module")
+        (err) ->
+            test.ok(false, "Failed to compile module")
+            test.done()
     )
 
 
@@ -94,8 +96,8 @@ exports.test_compile_modules = (test) ->
 
             test.done()
         (err) ->
-            console.log err
             test.ok false, "must not fail"
+            test.done()
     )
 
 
