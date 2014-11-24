@@ -113,17 +113,9 @@ compile_module = (config, module) ->
 
 
 compile_modules = (config, modules) ->
-    Rx.Observable.create (observer) ->
-        Rx.Observable
-        .fromArray(modules)
-        .flatMap(l.partial(compile_module, config))
-        .toArray()
-        .subscribe(
-            (compiled_modules) ->
-                observer.onNext compiled_modules
-                observer.onCompleted()
-            (err) -> observer.onError err
-        )
+    Rx.Observable
+    .fromArray(modules)
+    .flatMap(l.partial(compile_module, config))
 
 
 module.exports = {

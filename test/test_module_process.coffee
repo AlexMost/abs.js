@@ -61,9 +61,10 @@ exports.test_compile_modules = (test) ->
             ext: ".mycomp"
             cast: (stream) -> stream.pipe(compiler_mock {prefix})
         ]
-
-    modules_source = compile_modules mock_config, [mock_module1, mock_module2]
-    modules_source.subscribe(
+    
+    compile_modules(mock_config, [mock_module1, mock_module2])
+    .toArray()
+    .subscribe(
         (modules) ->
             test.ok(
                 modules.length is 2,
