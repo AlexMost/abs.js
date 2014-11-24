@@ -13,9 +13,10 @@ any_module_changed = (modules) ->
 abs_build = (config, recipe) ->
     _process_module = l.partial process_module, config
     
-    modules_source = Rx.Observable
-                       .fromArray(recipe.modules)
-                       .flatMap(_process_module)
+    modules_source =
+    Rx.Observable
+    .fromArray(recipe.modules)
+    .flatMap(_process_module)
 
     compiled_modules_stream = new Rx.Subject()
 

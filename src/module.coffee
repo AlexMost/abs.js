@@ -29,7 +29,7 @@ get_module_files = (module, adapter) ->
                 observer.onError err
             else
                 observer.onNext files
-                observer.onCompleted()    
+                observer.onCompleted()
 
 
 process_module = (config, module) ->
@@ -118,9 +118,35 @@ compile_modules = (config, modules) ->
     .flatMap(l.partial(compile_module, config))
 
 
+cast_module = (config, module) ->
+    Rx.Observable.create (observer) ->
+        module_cast = config.modules[module.type]?.cast
+
+        unless module_cast
+            observer.onError(
+                """
+                Failed to resolve cast for module #{module.name}\n
+                type - #{module.type}\n
+                path - #{module.path}
+                """)
+            return
+
+        stream = through.obj()
+        fromStream(stream.pipe(module_cast(stream, module)))
+        .bufferWithCount(module.compiled_files.length)
+        .first()
+        .subscribe(
+            (files) ->
+                module.compiled_files = files
+                observer.onNext module
+                observer.onCompleted()
+            (err) -> observer.onError err
+        )
+        stream.write f for f in module.compiled_files
+        stream.end()
+
+
 module.exports = {
     process_module, compile_modules, get_compiler, compile_file,
-    compile_module
+    compile_module, cast_module
 }
-
-

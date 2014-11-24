@@ -1,7 +1,7 @@
 l = require 'lodash'
 compiler_mock = require '../src/compiler_mock'
 path = require 'path'
-{compile_module, compile_modules} = require '../src/module'
+{compile_module, compile_modules, cast_module} = require '../src/module'
 
 
 mock_module1 =
@@ -41,6 +41,12 @@ exports.test_compile_module = (test) ->
     module_source.subscribe(
         (module) ->
             compiled_file = (l.first module.compiled_files)
+
+            test.ok(
+                module.compiled_files.length is 1
+                "Must be only one compiled source file"
+            )
+
             source = compiled_file.contents.toString()
             compiled = compiled_file.compiled.toString()
             test.ok(
@@ -61,7 +67,7 @@ exports.test_compile_modules = (test) ->
             ext: ".mycomp"
             cast: (stream) -> stream.pipe(compiler_mock {prefix})
         ]
-    
+
     compile_modules(mock_config, [mock_module1, mock_module2])
     .toArray()
     .subscribe(
@@ -93,3 +99,36 @@ exports.test_compile_modules = (test) ->
     )
 
 
+exports.test_cast_module = (test) ->
+    prefix = "prefix1_"
+    cast_prefix = "prefix2_"
+
+    mock_config =
+        compilers: [
+            name: "mycomp"
+            ext: ".mycomp"
+            cast: (stream) ->
+                stream.pipe(compiler_mock {prefix})
+        ]
+        modules:
+            single_file:
+                cast: (stream, module) ->
+                    stream.pipe(compiler_mock {prefix: cast_prefix})
+
+    (compile_module mock_config, mock_module1)
+    .flatMap(l.partial(cast_module, mock_config))
+    .subscribe(
+        (module) ->
+            test.ok(
+                module.compiled_files.length is 1
+                "Must be only one compiled source file"
+            )
+            src_content = module.compiled_files[0].contents.toString()
+            compiled = module.compiled_files[0].compiled.toString()
+            test.ok(
+                (compiled is (cast_prefix + prefix + src_content))
+                "Module cast return's wrong result"
+            )
+            test.done()
+        (err) -> test.ok "false", "should not fail when casting module"
+    )

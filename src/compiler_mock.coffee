@@ -3,19 +3,19 @@
 through = require('through2')
 
 module.exports = (opt) ->
+    prefix = opt.prefix or "<compiled-file>"
 
-  prefix = opt.prefix or "<compiled-file>"
+    transform = (file, enc, cb) ->
+        if file.isStream()
+            return cb(new Error('mock compiler', 'Streaming not supported'))
 
-  transform = (file, enc, cb) ->
-    if file.isNull()
-      return cb(null, file)
+        if file.compiled
+            str = file.compiled.toString('utf-8')
+        else
+            str = file.contents.toString('utf-8')
 
-    if file.isStream()
-      return cb(new Error('mock compiler', 'Streaming not supported'))
+        data = prefix + str
+        file.compiled = new Buffer(data)
+        cb(null, file)
 
-    str = file.contents.toString('utf8')
-    data = prefix + str
-    file.compiled = new Buffer(data);
-    cb(null, file)
-  
-  through.obj transform
+    through.obj transform
