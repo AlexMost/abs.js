@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/AlexMost/abs.js.svg?branch=master)](https://travis-ci.org/AlexMost/abs.js)
+
 abs.js
 ======
 
