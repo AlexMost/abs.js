@@ -2,7 +2,7 @@ Rx = require 'rx'
 l = require 'lodash'
 parse_config = require './config_parser'
 {get_recipe_data} = require 'recipejs'
-{process_module, compile_modules} = require './module'
+{process_module, compile_modules, cast_module} = require './module'
 {process_bundle} = require './bundle'
 
 
@@ -27,8 +27,14 @@ abs_build = (config, recipe) ->
             .first()
             .filter(any_module_changed)
             .flatMap(l.partial(compile_modules, config))
+            .flatMap(l.partial(cast_module, config))
+            .toArray()
+            .flatMap(l.partial(process_bundle, config, bundle))
             .subscribe(
-                (r) ->  #console.log r
+                (r) -> 
+                    # console.log '------------------------------------'
+                    # console.log 'bundle', bundle.name
+                    # console.log r.contents.toString()
                 (err) -> console.log "[Err]", err)
 
     modules_source.subscribe(

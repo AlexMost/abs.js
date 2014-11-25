@@ -44,12 +44,17 @@ adapters =
 
 
 modules =
-    single_file: (stream) ->
-        stream.pipe(header('single_file\n'))
+    single_file:
+        cast: (stream, module) ->
+            stream
+            .pipe(concat("#{module.name}.js"))
+            .pipe(header("//single_file #{module.name}\n"))
 
-    commonjs_file: (stream, module) ->
-        stream
-        .pipe(header("commonjs file #{module.name}\n"))
+    commonjs_file:
+        cast: (stream, module) ->
+            stream
+            .pipe(concat("#{module.name}.js"))
+            .pipe(header("//commonjs file #{module.name}\n"))
 
 
 config =
@@ -63,8 +68,8 @@ config =
         default:
             cast: (stream, bundle) ->
                 stream
-                .pipe(concat())
-                .pipe(gulp.dest('./tmp'))
+                .pipe(header("// bundle #{bundle.name}"))
+                .pipe(concat("#{bundle.name}.js"))
 
 
 abs(config)("./test/fixtures/recipe_data.yaml")

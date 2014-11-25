@@ -4,8 +4,7 @@ l = require 'lodash'
 concat = require 'gulp-concat'
 
 
-get_bundle_sources = (modules) ->
-    l.compose(l.flatten, (l.map modules, (m) -> m.compiled_files))
+get_bundle_sources = (modules) -> l.map modules, (m) -> m.casted_module
 
 
 concat_bundle_files = (files, bundle) ->
