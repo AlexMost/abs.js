@@ -35,7 +35,10 @@ abs_build = (config, recipe) ->
                     # console.log '------------------------------------'
                     # console.log 'bundle', bundle.name
                     # console.log r.contents.toString()
-                (err) -> console.log "[Err]", err)
+                (err) ->
+                    console.log "[Err]", err
+                    console.log err.stack
+                )
 
     modules_source.subscribe(
         (b) -> compiled_modules_stream.onNext(b)

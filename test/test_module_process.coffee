@@ -49,6 +49,7 @@ exports.test_compile_module = (test) ->
 
             source = compiled_file.contents.toString()
             compiled = compiled_file.compiled.toString()
+            
             test.ok(
                 prefix + source is compiled
                 "Module file must be with prefix #{prefix}"

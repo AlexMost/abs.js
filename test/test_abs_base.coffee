@@ -68,8 +68,9 @@ config =
         default:
             cast: (stream, bundle) ->
                 stream
-                .pipe(header("// bundle #{bundle.name}"))
                 .pipe(concat("#{bundle.name}.js"))
+                .pipe(header("// ---> bundle #{bundle.name}\n"))
+                
 
 
 abs(config)("./test/fixtures/recipe_data.yaml")

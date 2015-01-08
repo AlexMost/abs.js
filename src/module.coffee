@@ -132,7 +132,7 @@ cast_module = (config, module) ->
             return
 
         stream = through.obj()
-        fromStream(stream.pipe(module_cast(stream, module)))
+        fromStream(module_cast(stream, module))
         .first()
         .subscribe(
             (file) ->
