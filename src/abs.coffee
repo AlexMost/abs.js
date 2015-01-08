@@ -31,7 +31,7 @@ abs_build = (config, recipe) ->
             .toArray()
             .flatMap(l.partial(process_bundle, config, bundle))
             .subscribe(
-                (r) -> 
+                (r) ->
                     # console.log '------------------------------------'
                     # console.log 'bundle', bundle.name
                     # console.log r.contents.toString()

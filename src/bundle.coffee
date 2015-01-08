@@ -13,7 +13,7 @@ process_bundle = (config, bundle, modules) ->
     sources = get_bundle_sources modules
     Rx.Observable.create (observer) ->
 
-        # TODO: write bundles resolver 
+        # TODO: write bundles resolver
         # (default name as default)
         bundle_cast = config.bundles.default.cast
 
