@@ -49,7 +49,6 @@ process_bundle = (config, bundle, modules) ->
                 observer.onCompleted()
             (err) -> observer.onError err
         )
-
         stream.write s for s in sources
         stream.end()
 
