@@ -20,7 +20,7 @@ gulp.task 'test', ->
     gulp.src(SRC_TEST_PATH)
         .pipe(coffeelint())
         .pipe(coffeelint.reporter())
-        .pipe(nodeunit({reporter: "nested"}))
+        .pipe(nodeunit({reporter: "tap"}))
 
 
 gulp.task 'watch', ->

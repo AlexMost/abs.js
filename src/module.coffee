@@ -22,9 +22,9 @@ get_is_module_changed = (module, adapter) ->
                 observer.onCompleted()
 
 
-get_module_files = (module, adapter) ->
+get_module_files = (module, adapter, config) ->
     Rx.Observable.create (observer) ->
-        adapter.get_files module, (err, files) ->
+        adapter.get_files module, config, (err, files) ->
             if err
                 observer.onError err
             else
@@ -43,7 +43,7 @@ process_module = (config, module) ->
 
         Rx.Observable.zip(
             (get_is_module_changed module, adapter)
-            (get_module_files module, adapter)
+            (get_module_files module, adapter, config)
             (is_changed, file_paths) -> [is_changed, file_paths])
         .first()
         .subscribe(

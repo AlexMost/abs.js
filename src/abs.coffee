@@ -46,7 +46,10 @@ abs_build = (config, recipe) ->
     )
 
 
-abs = (raw_config) -> (recipe_path) ->
+abs = (raw_config) ->
+    # TODO: check if recipe path
+    # TODO: config validation
+    recipe_path = raw_config.recipe_path
     config = parse_config raw_config
     get_recipe_data recipe_path, (err, recipe) ->
         abs_build config, recipe

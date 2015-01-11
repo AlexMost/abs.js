@@ -19,50 +19,44 @@ single_file_adapter =
         # XXX hardcoded recipe path
         cb null, true
 
-    get_files: (module, cb) ->
-        file_real_path = path.resolve './test/fixtures/', module.path
+    get_files: (module, config, cb) ->
+        recipe_path = path.dirname config.recipe_path
+        file_real_path = path.resolve recipe_path, module.path
         cb null, [file_real_path]
 
 
-compilers =[
-    {
-        name: "js"
-        ext: ".js"
-        cast: (stream) -> stream
-    }
-    {
-        name: "coffee"
-        ext: ".coffee"
-        cast: (stream) -> stream.pipe(coffee())
-    }
-]
-
-
-adapters =
-    single_file: single_file_adapter
-    commonjs_file: single_file_adapter
-
-
-modules =
-    single_file:
-        cast: (stream, module) ->
-            stream
-            .pipe(concat("#{module.name}.js"))
-            .pipe(header("//single_file #{module.name}\n"))
-
-    commonjs_file:
-        cast: (stream, module) ->
-            stream
-            .pipe(concat("#{module.name}.js"))
-            .pipe(header("//commonjs file #{module.name}\n"))
-
-
 config =
-    compilers: compilers
+    recipe_path: "./test/fixtures/recipe_data.yaml"
+    
+    compilers: [
+        {
+            name: "js"
+            ext: ".js"
+            cast: (stream) -> stream
+        }
+        {
+            name: "coffee"
+            ext: ".coffee"
+            cast: (stream) -> stream.pipe(coffee())
+        }
+    ]
 
-    adapters: adapters
+    adapters:
+        single_file: single_file_adapter
+        commonjs_file: single_file_adapter
 
-    modules: modules
+    modules:
+        single_file:
+            cast: (stream, module) ->
+                stream
+                .pipe(concat("#{module.name}.js"))
+                .pipe(header("//single_file #{module.name}\n"))
+
+        commonjs_file:
+            cast: (stream, module) ->
+                stream
+                .pipe(concat("#{module.name}.js"))
+                .pipe(header("//commonjs file #{module.name}\n"))
 
     bundles:
         default:
@@ -72,4 +66,4 @@ config =
                 .pipe(header("// ---> bundle #{bundle.name}\n"))
                 
 
-abs(config)("./test/fixtures/recipe_data.yaml")
+abs(config)
