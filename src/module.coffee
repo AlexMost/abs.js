@@ -12,9 +12,14 @@ default_compiler =
     cast: (stream) -> stream
 
 
-get_is_module_changed = (module, adapter) ->
+get_is_module_changed = (module, adapter, cached_module) ->
     Rx.Observable.create (observer) ->
-        adapter.was_changed module, (err, is_changed) ->
+        unless cached_module
+            observer.onNext true
+            observer.onCompleted()
+            return
+
+        adapter.was_changed module, cached_module, (err, is_changed) ->
             if err
                 observer.onError err
             else
@@ -32,7 +37,15 @@ get_module_files = (module, adapter, config) ->
                 observer.onCompleted()
 
 
-process_module = (config, module) ->
+get_module_from_cache = (module_name, cache_data) ->
+    return null unless cache_data.modules
+    cache_data.modules[module_name]
+
+
+process_module = (config, cache, module) ->
+    cached_module = get_module_from_cache(
+        module.name, cache.read())
+
     Rx.Observable.create (observer) ->
         adapter = config.adapters[module.type]
 
@@ -41,15 +54,15 @@ process_module = (config, module) ->
                 "Adapter not found for module #{module.name}")
             return
 
-        Rx.Observable.zip(
-            (get_is_module_changed module, adapter)
-            (get_module_files module, adapter, config)
-            (is_changed, file_paths) -> [is_changed, file_paths])
+        get_module_files(module, adapter, config)
+        .flatMap((file_paths) ->
+            module.file_paths = file_paths
+            get_is_module_changed(
+                module, adapter, cached_module, file_paths))
         .first()
         .subscribe(
-            ([is_changed, file_paths]) ->
+            (is_changed) ->
                 module.is_changed = is_changed
-                module.file_paths = file_paths
                 observer.onNext module
                 observer.onCompleted()
             (err) -> observer.onError err
@@ -147,5 +160,5 @@ cast_module = (config, module) ->
 
 module.exports = {
     process_module, compile_modules, get_compiler, compile_file,
-    compile_module, cast_module
+    compile_module, cast_module, get_is_module_changed
 }

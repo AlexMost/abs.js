@@ -4,14 +4,18 @@ parse_config = require './config_parser'
 {get_recipe_data} = require 'recipejs'
 {process_module, compile_modules, cast_module} = require './module'
 {process_bundle} = require './bundle'
+{init_cache} = require './cache'
+
+get_recipe_data_source = Rx.Node.fromNodeCallback get_recipe_data
 
 
 any_module_changed = (modules) ->
     l.any modules.map (m) -> m.is_changed
 
 
-abs_build = (config, recipe) ->
-    _process_module = l.partial process_module, config
+abs_build = (config, recipe, cache) ->
+    _process_module = l.partial(
+        process_module, config, cache)
     
     modules_source =
     Rx.Observable
@@ -49,10 +53,20 @@ abs_build = (config, recipe) ->
 abs = (raw_config) ->
     # TODO: check if recipe path
     # TODO: config validation
+    # TODO: make abs observable (returns bundles)
     recipe_path = raw_config.recipe_path
     config = parse_config raw_config
-    get_recipe_data recipe_path, (err, recipe) ->
-        abs_build config, recipe
+    Rx.Observable.zip(
+        get_recipe_data_source(recipe_path),
+        init_cache('.abscache'),
+        (recipe, cache) -> [recipe, cache])
+    .subscribe(
+        ([recipe, cache]) ->
+            abs_build config, recipe, cache
+        (error) ->
+            console.log "[Err]", error
+            console.log error.stack
+    )
 
 
 module.exports = abs

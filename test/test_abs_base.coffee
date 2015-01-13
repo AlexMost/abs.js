@@ -14,7 +14,7 @@ Later will be decomposed into small parts.
 
 
 single_file_adapter =
-    was_changed: (module, cb) ->
+    was_changed: (module, cached_module, cb) ->
         path = require 'path'
         # XXX hardcoded recipe path
         cb null, true
@@ -27,7 +27,7 @@ single_file_adapter =
 
 config =
     recipe_path: "./test/fixtures/recipe_data.yaml"
-    
+
     compilers: [
         {
             name: "js"

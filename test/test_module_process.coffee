@@ -1,7 +1,8 @@
 l = require 'lodash'
 compiler_mock = require '../src/compiler_mock'
 path = require 'path'
-{compile_module, compile_modules, cast_module} = require '../src/module'
+{compile_module, compile_modules, cast_module,
+get_is_module_changed} = require '../src/module'
 
 
 mock_module1 =
@@ -141,4 +142,65 @@ exports.test_cast_module = (test) ->
         (err) ->
             test.ok false, "should not fail when casting module"
             test.done()
+    )
+
+
+exports.test_get_is_module_changed_with_no_cache = (test) ->
+    module =
+        name: "module1"
+        path: "module1.coffee"
+
+    get_is_module_changed(module, {}, null)
+    .subscribe(
+        (is_changed) ->
+            test.ok(
+                is_changed,
+                "Should be changed if no cached module")
+            test.done()
+        (err) ->
+            test.ok false, "Should not fail"
+    )
+
+
+exports.test_get_is_module_changed_with_cache_changed = (test) ->
+    module =
+        name: "module1"
+        path: "module1.coffee"
+
+    adapter_mock =
+        was_changed: (module, cached_module, cb) ->
+            cb null, true
+
+    get_is_module_changed(
+        module, adapter_mock, {cache: "cache_mock"})
+    .subscribe(
+        (is_changed) ->
+            test.ok(
+                is_changed,
+                "Should be changed")
+            test.done()
+        (err) ->
+            test.ok false, "Should not fail"
+    )
+
+
+exports.test_get_is_module_changed_with_cache_not_changed = (test) ->
+    module =
+        name: "module1"
+        path: "module1.coffee"
+
+    adapter_mock =
+        was_changed: (module, cached_module, cb) ->
+            cb null, false
+
+    get_is_module_changed(
+        module, adapter_mock, {cache: "cache_mock"})
+    .subscribe(
+        (is_changed) ->
+            test.ok(
+                not is_changed,
+                "Should not be changed")
+            test.done()
+        (err) ->
+            test.ok false, "Should not fail"
     )
