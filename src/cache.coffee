@@ -9,35 +9,40 @@ DEFAULT_CACHE_PATH = ".abscache"
 #   bundles data and metadata
 #
 class Cache
-    # @param [Object] data object parsed from json
-    # @param [String] cache_path cache path
-    # @example internal structure of data object
-    #   {modules: [], bundles: []}
+    ###
+    @param [Object] data object parsed from json
+    @param [String] cache_path cache path
+    @example internal structure of data object
+      {modules: [], bundles: []}
+    ###
     constructor: (@data, @cache_path) ->
 
-    # Reads cache data
-    # @return [Object] cache data
+    ###
+    Reads cache data
+    @return [Object] cache data
+    ###
     read: -> @data
 
-    # Defines wether cache data is empty
-    # @return [Boolean] is cache empty
+    ###
+    Defines wether cache data is empty
+    @return [Boolean] is cache empty
+    ###
     isEmpty: -> l.isEmpty @data
 
 
-# Factory function for creating new cache instance
-# 
-# @param [String] cache file path
-# @return [Rx.Observable] observable with cache instance
+###
+Factory function for creating new cache instance
+
+@param [String] cache file path
+@return [Rx.Observable] observable with cache instance
+###
 init_cache = (cache_file_path) ->
     cache_file_path or= DEFAULT_CACHE_PATH
-
-    make_cache = (data) ->
-        new Cache data, cache_file_path
 
     Rx.Observable.create (observer) ->
         readFile(cache_file_path)
         .map((file_buffer) -> JSON.parse file_buffer)
-        .map(make_cache)
+        .map((data) -> new Cache data, cache_file_path)
         .subscribe(
             (cache_dump) ->
                 observer.onNext cache_dump

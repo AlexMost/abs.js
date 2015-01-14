@@ -11,13 +11,14 @@ default_compiler =
     name: "default"
     cast: (stream) -> stream
 
-
+###
+Defines wether module was changed.
+@param [Object] module application module
+@param [Object] adapter module adapter
+@param [Object] cached_module cached module
+@return [Rx.Observable Boolean] is module changed
+###
 get_is_module_changed = (module, adapter, cached_module) ->
-    ###
-    Defines wether module was changed.
-    returns Observable true or false
-    ###
-
     Rx.Observable.create (observer) ->
         unless cached_module
             observer.onNext true
@@ -46,15 +47,16 @@ get_module_from_cache = (module_name, cache_data) ->
     return null unless cache_data.modules
     cache_data.modules[module_name]
 
+###
+Attaching file paths to module object.
+  Uses config to resolve appropriate adapter for module
+  and retreives module file paths
 
-# Attaching file paths to module object.
-#   Uses config to resolve appropriate adapter for module
-#   and retreives module file paths
-#
-# @param [Object] config abs.js config
-# @param [Object] module module
-# @return [Rx.Observable] observable with the same module 
-#   with 'file_paths' property attached
+@param [Object] config abs.js config
+@param [Object] module module
+@return [Rx.Observable] observable with the same module 
+  with 'file_paths' property attached
+###
 attach_module_files = (config, module) ->
     adapter = config.adapters[module.type]
 
@@ -72,16 +74,17 @@ attach_module_files = (config, module) ->
                 observer.onCompleted()
             (err) -> observer.onError err)
 
+###
+Attaching is_changed flag to module object.
+  Uses config to resolve appropriate adapter for module
+  and defines wether module is changed.
 
-# Attaching is_changed flag to module object.
-#   Uses config to resolve appropriate adapter for module
-#   and defines wether module is changed.
-#
-# @param [Object] config abs.js config
-# @param [Cache] cache application cache
-# @param [Object] module module
-# @return [Rx.Observable] observable with the same module 
-#   with 'is_changed' property attached
+@param [Object] config abs.js config
+@param [Cache] cache application cache
+@param [Object] module module
+@return [Rx.Observable] observable with the same module 
+  with 'is_changed' property attached
+###
 attach_is_changed = (config, cache, module) ->
     cached_module = get_module_from_cache(
         module.name, cache.read())
