@@ -3,18 +3,36 @@ fs = require 'fs'
 readFile = Rx.Node.fromNodeCallback fs.readFile
 l = require 'lodash'
 
+DEFAULT_CACHE_PATH = ".abscache"
 
-make_cache = (data) ->
-    read: -> data
-    isEmpty: -> l.isEmpty data
+# Application cache is used for storing compiled modules and
+#   bundles data and metadata
+#
+class Cache
+    # @param [Object] data object parsed from json
+    # @param [String] cache_path cache path
+    # @example internal structure of data object
+    #   {modules: [], bundles: []}
+    constructor: (@data, @cache_path) ->
+
+    # Reads cache data
+    # @return [Object] cache data
+    read: -> @data
+
+    # Defines wether cache data is empty
+    # @return [Boolean] is cache empty
+    isEmpty: -> l.isEmpty @data
 
 
+# Factory function for creating new cache instance
+# 
+# @param [String] cache file path
+# @return [Rx.Observable] observable with cache instance
 init_cache = (cache_file_path) ->
-    ###
-    Returns observable with cache object
-    If no file were found while reading cache_filte_path then
-    empty cache is returned.
-    ###
+    cache_file_path or= DEFAULT_CACHE_PATH
+
+    make_cache = (data) ->
+        new Cache data, cache_file_path
 
     Rx.Observable.create (observer) ->
         readFile(cache_file_path)
@@ -30,4 +48,4 @@ init_cache = (cache_file_path) ->
         )
 
 
-module.exports = {init_cache}
+module.exports = {init_cache, Cache}

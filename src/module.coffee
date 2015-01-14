@@ -78,7 +78,7 @@ attach_module_files = (config, module) ->
 #   and defines wether module is changed.
 #
 # @param [Object] config abs.js config
-# @param [Object] cache application cache
+# @param [Cache] cache application cache
 # @param [Object] module module
 # @return [Rx.Observable] observable with the same module 
 #   with 'is_changed' property attached
