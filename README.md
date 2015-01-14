@@ -4,7 +4,7 @@
 Introduction
 ======
 
-Abs.js (awesome build sequence) - is a project for improving assets build process based on [gulp](http://gulpjs.com/) and gulp tasks. The main gloal of this project is to provide configurable build sequence for building your client-side assets for making them work in browser. 
+Abs.js (awesome build sequence) - is a project for improving assets build process based on [gulp](http://gulpjs.com/) and gulp tasks. The main goal of this project is to provide configurable build sequence for building your client-side assets for making them work in browser. 
 
 There are a lot's of solutions for building client-side applications nowadays. Allmost all of them provide a huge amount of plugins for transforming, concatenating, minifying and optimizing files. This project provides one level abstraction on top of operations with simple files. Abs.js is designed for operating with modules. Module is something that can be a single file, or folder with it's own namespace, npm or bower component e.t.c. 
 
