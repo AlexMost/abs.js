@@ -48,7 +48,7 @@ init_cache = (cache_file_path) ->
                 observer.onNext cache_dump
                 observer.onCompleted()
             (error) ->
-                observer.onNext(make_cache {})
+                observer.onNext(new Cache {}, cache_file_path)
                 observer.onCompleted
         )
 
