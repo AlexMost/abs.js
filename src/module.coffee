@@ -13,6 +13,11 @@ default_compiler =
 
 
 get_is_module_changed = (module, adapter, cached_module) ->
+    ###
+    Defines wether module was changed.
+    returns Observable true or false
+    ###
+
     Rx.Observable.create (observer) ->
         unless cached_module
             observer.onNext true
@@ -42,24 +47,54 @@ get_module_from_cache = (module_name, cache_data) ->
     cache_data.modules[module_name]
 
 
-process_module = (config, cache, module) ->
-    cached_module = get_module_from_cache(
-        module.name, cache.read())
+# Attaching file paths to module object.
+#   Uses config to resolve appropriate adapter for module
+#   and retreives module file paths
+#
+# @param [Object] config abs.js config
+# @param [Object] module module
+# @return [Rx.Observable] observable with the same module 
+#   with 'file_paths' property attached
+attach_module_files = (config, module) ->
+    adapter = config.adapters[module.type]
 
     Rx.Observable.create (observer) ->
-        adapter = config.adapters[module.type]
-
         unless adapter
             observer.onError(
                 "Adapter not found for module #{module.name}")
             return
 
         get_module_files(module, adapter, config)
-        .flatMap((file_paths) ->
-            module.file_paths = file_paths
-            get_is_module_changed(
-                module, adapter, cached_module, file_paths))
-        .first()
+        .subscribe(
+            (file_paths) ->
+                module.file_paths = file_paths
+                observer.onNext module
+                observer.onCompleted()
+            (err) -> observer.onError err)
+
+
+# Attaching is_changed flag to module object.
+#   Uses config to resolve appropriate adapter for module
+#   and defines wether module is changed.
+#
+# @param [Object] config abs.js config
+# @param [Object] cache application cache
+# @param [Object] module module
+# @return [Rx.Observable] observable with the same module 
+#   with 'is_changed' property attached
+attach_is_changed = (config, cache, module) ->
+    cached_module = get_module_from_cache(
+        module.name, cache.read())
+
+    adapter = config.adapters[module.type]
+
+    Rx.Observable.create (observer) ->
+        unless adapter
+            observer.onError(
+                "Adapter not found for module #{module.name}")
+            return
+
+        get_is_module_changed(module, adapter, cached_module)
         .subscribe(
             (is_changed) ->
                 module.is_changed = is_changed
@@ -69,13 +104,12 @@ process_module = (config, cache, module) ->
         )
 
 
-get_compiler = (config, file) ->
-    ###
+###
     Resolves compiler from config by file extension.
     If compiler wasn't resolved - get's default compiler.
     returns: compiler with cast function for file processing.
-    ###
-    
+###
+get_compiler = (config, file) ->
     file_ext = path.extname file
     compilers = l.filter config.compilers, (compiler) ->
         if l.isArray compiler.ext
@@ -85,13 +119,12 @@ get_compiler = (config, file) ->
     (l.first compilers) or default_compiler
 
 
-compile_file = (config, file) ->
-    ###
+###
     Retreives compiler with cast function and use it's
     cast function to compile file
     returns: Observable with compiled vinyl File object
-    ###
-
+###
+compile_file = (config, file) ->
     compiler = get_compiler config, file
 
     (fromStream gulp.src(file))
@@ -99,13 +132,13 @@ compile_file = (config, file) ->
     .first()
 
 
-compile_module = (config, module) ->
-    ###
+###
     Accepts module from recipe that need to be compiled.
     Compiles all resolved paths from module.file_paths attribute.
     Adds compiled_files attribute with compiled sources to module object
     returns: Observable module
-    ###
+###
+compile_module = (config, module) ->
 
     Rx.Observable.create (observer) ->
         Rx.Observable
@@ -159,6 +192,6 @@ cast_module = (config, module) ->
 
 
 module.exports = {
-    process_module, compile_modules, get_compiler, compile_file,
-    compile_module, cast_module, get_is_module_changed
+    attach_is_changed, compile_modules, get_compiler, compile_file,
+    compile_module, cast_module, get_is_module_changed, attach_module_files
 }

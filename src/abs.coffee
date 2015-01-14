@@ -2,7 +2,8 @@ Rx = require 'rx'
 l = require 'lodash'
 parse_config = require './config_parser'
 {get_recipe_data} = require 'recipejs'
-{process_module, compile_modules, cast_module} = require './module'
+{attach_is_changed, compile_modules, cast_module,
+attach_module_files} = require './module'
 {process_bundle} = require './bundle'
 {init_cache} = require './cache'
 
@@ -14,13 +15,14 @@ any_module_changed = (modules) ->
 
 
 abs_build = (config, recipe, cache) ->
-    _process_module = l.partial(
-        process_module, config, cache)
-    
+    _attach_is_changed = l.partial(attach_is_changed, config, cache)
+    _attach_file_paths = l.partial(attach_module_files, config)
+
     modules_source =
     Rx.Observable
     .fromArray(recipe.modules)
-    .flatMap(_process_module)
+    .flatMap(_attach_file_paths)
+    .flatMap(_attach_is_changed)
 
     compiled_modules_stream = new Rx.Subject()
 

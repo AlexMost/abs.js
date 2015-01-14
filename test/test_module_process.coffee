@@ -2,7 +2,7 @@ l = require 'lodash'
 compiler_mock = require '../src/compiler_mock'
 path = require 'path'
 {compile_module, compile_modules, cast_module,
-get_is_module_changed} = require '../src/module'
+get_is_module_changed, attach_module_files} = require '../src/module'
 
 
 mock_module1 =
@@ -203,4 +203,54 @@ exports.test_get_is_module_changed_with_cache_not_changed = (test) ->
             test.done()
         (err) ->
             test.ok false, "Should not fail"
+    )
+
+
+exports.test_attach_module_files = (test) ->
+    module =
+        name: "module1"
+        type: "test"
+        path: "module1.coffee"
+
+    adapter_mock =
+        get_files: (module, config, cb) ->
+            cb null, [module.path]
+
+    config =
+        adapters:
+            test: adapter_mock
+
+    attach_module_files(config, module)
+    .subscribe(
+        (module) ->
+            test.deepEqual(
+                module.file_paths,
+                ["module1.coffee"],
+                "Must resolve module files correctly")
+            test.done()
+        (err) ->
+            test.ok false, "Should not fail"
+    )
+
+exports.test_attach_module_files_adapter_not_found = (test) ->
+    module =
+        name: "module1"
+        type: "test"
+        path: "module1.coffee"
+
+    adapter_mock =
+        get_files: (module, config, cb) ->
+            cb null, [module.path]
+
+    config =
+        adapters:
+            testtt: adapter_mock
+
+    attach_module_files(config, module)
+    .subscribe(
+        (module) ->
+            test.ok false, "Should fail"
+        (err) ->
+            test.ok true, "Should fail if not adapter was found"
+            test.done()
     )
