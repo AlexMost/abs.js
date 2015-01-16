@@ -4,41 +4,48 @@ through = require 'through2'
 l = require 'lodash'
 concat = require 'gulp-concat'
 
-
+###
+Gets modules list from modules ([Module])
+@param [Array<Module>] modules
+@return [Array<File>] vinyl files
+###
 get_bundle_sources = (modules) ->
-    ###
-    Gets modules list and retreives casted_module
-    attribute from each module object
-    ###
-
     l.map modules, (m) -> m.get_compiled_module()
 
 
-resolve_bundle_processor = (bundle_name, config) ->
-    ###
-    Resolves appropriate bundle processor
+###
+Resolves appropriate bundle processor
     from config. If no processor found - default
     bundle is used by default.
-    ###
-
+@param [String] bundle_name bundle name.
+@param [Object] application config.
+@return [Object] bundle processor.
+###
+resolve_bundle_processor = (bundle_name, config) ->
     if bundle_name of config.bundles
         config.bundles[bundle_name]
     else
         config.bundles["default"]
 
-
+###
+Processes bundle casts with appropriate transformations from config.
+@param [Object] config application config.
+@param [Bundle] bundle application bundle.
+@param [Array<Module>] modules array of modules.
+@return [Rx.Observable File] observable compiled file object.
+###
 process_bundle = (config, bundle, modules) ->
     sources = get_bundle_sources modules
     Rx.Observable.create (observer) ->
 
         bundle_processor = resolve_bundle_processor(
-            bundle.name, config)
+            bundle.get_name(), config)
 
         bundle_cast = bundle_processor.cast
 
         unless bundle_cast
             observer.onError(
-                "Failed to resolve cast for bundle #{bundle.name}")
+                "Failed to resolve cast for bundle #{bundle.get_name()}")
             return
 
         stream = through.obj()

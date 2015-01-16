@@ -4,9 +4,10 @@ parse_config = require './config_parser'
 {get_recipe_data} = require 'recipejs'
 {attach_is_changed, process_modules, cast_module,
 attach_module_files, compile_module} = require './module_process'
-{process_bundle} = require './bundle'
+{process_bundle} = require './bundle_process'
 {init_cache} = require './cache'
 {Module} = require './types/module'
+{Bundle} = require './types/bundle'
 
 get_recipe_data_source = Rx.Node.fromNodeCallback get_recipe_data
 
@@ -28,10 +29,11 @@ abs_build = (config, recipe, cache) ->
 
     compiled_modules_stream = new Rx.Subject()
 
-    recipe.bundles.map (bundle) ->
+    recipe.bundles.map (bundle_data) ->
+        bundle = new Bundle bundle_data
         compiled_modules_stream
-            .filter((m) -> m.name in bundle.modules)
-            .bufferWithCount(bundle.modules.length)
+            .filter((m) -> m.name in bundle.get_modules())
+            .bufferWithCount(bundle.get_modules().length)
             .first()
             .filter(any_module_changed)
             .flatMap(l.partial(process_modules, config))

@@ -4,9 +4,10 @@ Rx = require 'rx'
 concat = require 'gulp-concat'
 header = require 'gulp-header'
 {resolve_bundle_processor,
-process_bundle} = require '../src/bundle'
+process_bundle} = require '../src/bundle_process'
 File = require 'vinyl'
 {Module} = require '../src/types/module'
+{Bundle} = require '../src/types/bundle'
 
 
 exports.test_resolve_bundle_processor = (test) ->
@@ -35,8 +36,7 @@ exports.test_resolve_bundle_processor = (test) ->
 
 
 exports.test_process_bundle = (test) ->
-    bundle_mock =
-        name: "bundle1"
+    bundle_mock = new Bundle {name: "bundle1"}
 
     config_mock =
         bundles:
@@ -44,7 +44,7 @@ exports.test_process_bundle = (test) ->
                 cast: (stream, bundle) ->
                     stream
                     .pipe(concat(
-                        "#{bundle.name}.js"
+                        "#{bundle.get_name()}.js"
                         {newLine: ";"}))
 
     # some module mocks with casted module attribute

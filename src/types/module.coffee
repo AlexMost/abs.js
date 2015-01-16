@@ -1,16 +1,20 @@
 # Type is used for representing application module
 class Module
+
+    ###
+    @param [Object] module_data contains initial data for module that was parsed from recipe file. {name, path, type, deps, opts}
+    ###
     constructor: (@module_data) ->
 
     ###
     Gets module name.
-    @return [String] module name
+    @return [String] module name.
     ###
     get_name: -> @module_data.name
 
     ###
     Gets module path (relative to recipe file).
-    @return [String] module path
+    @return [String] module path.
     ###
     get_path: -> @module_data.path
 
@@ -29,7 +33,7 @@ class Module
 
     ###
     Gets file paths.
-    @return [Array<String>] module file paths
+    @return [Array<String>] module file paths.
     ###
     get_file_paths: -> @module_data.file_paths
 
