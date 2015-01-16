@@ -1,7 +1,7 @@
 l = require 'lodash'
 compiler_mock = require '../src/compiler_mock'
 path = require 'path'
-{compile_module, compile_modules, cast_module,
+{compile_module, process_modules, cast_module,
 get_is_module_changed, attach_module_files} = require '../src/module'
 
 
@@ -62,8 +62,9 @@ exports.test_compile_module = (test) ->
     )
 
 
-exports.test_compile_modules = (test) ->
+exports.test_process_modules = (test) ->
     prefix = "test_compile_module_file"
+    cast_prefix = "prefix2_"
 
     mock_config =
         compilers: [
@@ -71,11 +72,16 @@ exports.test_compile_modules = (test) ->
             ext: ".mycomp"
             cast: (stream) -> stream.pipe(compiler_mock {prefix})
         ]
+        modules:
+            single_file:
+                cast: (stream, module) ->
+                    stream.pipe(compiler_mock {prefix: cast_prefix})
 
-    compile_modules(mock_config, [mock_module1, mock_module2])
+    process_modules(mock_config, [mock_module1, mock_module2])
     .toArray()
     .subscribe(
         (modules) ->
+
             test.ok(
                 modules.length is 2,
                 "must be 2 compiled modules")
@@ -83,21 +89,23 @@ exports.test_compile_modules = (test) ->
             [module1, module2] = modules
 
             mod_1_source = module1.compiled_files[0].contents.toString()
-            mod_1_compiled = module1.compiled_files[0].compiled.toString()
+            mod_1_compiled = module1.casted_module.compiled.toString()
 
             test.ok(
-                prefix + mod_1_source is mod_1_compiled
+                cast_prefix + prefix + mod_1_source is mod_1_compiled
                 "Module must be compiled")
 
             mod_2_source = module2.compiled_files[0].contents.toString()
-            mod_2_compiled = module2.compiled_files[0].compiled.toString()
+            mod_2_compiled = module2.casted_module.compiled.toString()
 
             test.ok(
-                prefix + mod_2_source is mod_2_compiled
+                cast_prefix + prefix + mod_2_source is mod_2_compiled
                 "Module must be compiled")
 
             test.done()
         (err) ->
+
+            console.log err.stack
             test.ok false, "must not fail"
             test.done()
     )

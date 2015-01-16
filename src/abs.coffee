@@ -2,8 +2,8 @@ Rx = require 'rx'
 l = require 'lodash'
 parse_config = require './config_parser'
 {get_recipe_data} = require 'recipejs'
-{attach_is_changed, compile_modules, cast_module,
-attach_module_files} = require './module'
+{attach_is_changed, process_modules, cast_module,
+attach_module_files, compile_module} = require './module'
 {process_bundle} = require './bundle'
 {init_cache} = require './cache'
 
@@ -32,15 +32,14 @@ abs_build = (config, recipe, cache) ->
             .bufferWithCount(bundle.modules.length)
             .first()
             .filter(any_module_changed)
-            .flatMap(l.partial(compile_modules, config))
-            .flatMap(l.partial(cast_module, config))
+            .flatMap(l.partial(process_modules, config))
             .toArray()
             .flatMap(l.partial(process_bundle, config, bundle))
             .subscribe(
                 (r) ->
-                    # console.log '------------------------------------'
-                    # console.log 'bundle', bundle.name
-                    # console.log r.contents.toString()
+#                    console.log '------------------------------------'
+#                    console.log 'bundle', bundle.name
+#                    console.log r.contents.toString()
                 (err) ->
                     console.log "[Err]", err
                     console.log err.stack

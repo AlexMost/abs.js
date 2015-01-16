@@ -160,11 +160,18 @@ compile_module = (config, module) ->
                     "Failed to compile module #{module.name} #{err}")
         )
 
-
-compile_modules = (config, modules) ->
+###
+Compile module files with [Config.compilers] and casts each
+    separate module with appropriate module adapter form [Config.adapters]
+@param [Object] config application config
+@param [Array<Module>] modules array of modules
+@return [Rx.Observable Module] observable with compiled module
+###
+process_modules = (config, modules) ->
     Rx.Observable
     .fromArray(modules)
     .flatMap(l.partial(compile_module, config))
+    .flatMap(l.partial(cast_module, config))
 
 
 cast_module = (config, module) ->
@@ -195,6 +202,6 @@ cast_module = (config, module) ->
 
 
 module.exports = {
-    attach_is_changed, compile_modules, get_compiler, compile_file,
+    attach_is_changed, process_modules, get_compiler, compile_file,
     compile_module, cast_module, get_is_module_changed, attach_module_files
 }
