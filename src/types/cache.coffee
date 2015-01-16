@@ -6,9 +6,9 @@ l = require 'lodash'
 class Cache
     ###
     @param [Object] data object parsed from json
+    @option data [Array<Object>] modules data
+    @option data [Array<Object>] bundles data
     @param [String] cache_path cache path
-    @example internal structure of data object
-      {modules: [], bundles: []}
     ###
     constructor: (@data, @cache_path) ->
 

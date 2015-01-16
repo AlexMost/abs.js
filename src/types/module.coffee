@@ -2,7 +2,11 @@
 class Module
 
     ###
-    @param [Object] module_data contains initial data for module that was parsed from recipe file. {name, path, type, deps, opts}
+    @param [Object] module_data contains initial data for module.
+    @option module_data [String] name module name.
+    @option module_data [String] path module path.
+    @option module_data [Array<String>] deps module dependencies.
+    @option module_data [Object] opts module additional options.
     ###
     constructor: (@module_data) ->
 

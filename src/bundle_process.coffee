@@ -5,7 +5,7 @@ l = require 'lodash'
 concat = require 'gulp-concat'
 
 ###
-Gets modules list from modules ([Module])
+Gets modules list from modules (Module)
 @param [Array<Module>] modules
 @return [Array<File>] vinyl files
 ###

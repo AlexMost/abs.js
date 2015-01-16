@@ -75,18 +75,18 @@ exports.test_process_bundle = (test) ->
         bundle_mock
         [module1, module2])
     .subscribe(
-        (bundle) ->
+        (bundle_file) ->
             test.ok(
-                path.basename(bundle.path) is "bundle1.js",
+                path.basename(bundle_file.path) is "bundle1.js",
                 "Bundle name must be bundle1.js")
 
-            contents = bundle.contents.toString()
+            contents = bundle_file.contents.toString()
             test.ok(
                 contents is (module1_contents + ";" + module2_contents),
                 "Bundle must contain concatenated modules")
 
             test.done()
         (error) ->
-            tets.done()
+            test.ok(false, "Must not fail process bundle")
     )
 

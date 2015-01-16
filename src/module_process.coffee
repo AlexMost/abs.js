@@ -111,7 +111,7 @@ attach_is_changed = (config, cache, module) ->
 ###
 Resolves compiler from config by file extension.
     If compiler wasn't resolved - get's default compiler.
-@return: [Object] compiler with cast function for file processing.
+@return [Object] compiler with cast function for file processing.
 ###
 get_compiler = (config, file) ->
     file_ext = path.extname file
@@ -126,7 +126,7 @@ get_compiler = (config, file) ->
 ###
 Gets compiler with cast function and use it's
     cast function to compile file
-@return: [Rx.Observable File] with compiled vinyl File object
+@return [Rx.Observable File] with compiled vinyl File object
 ###
 compile_file = (config, file) ->
     compiler = get_compiler config, file
@@ -140,7 +140,7 @@ compile_file = (config, file) ->
 Accepts module from recipe that need to be compiled.
     Compiles all resolved paths from module.file_paths attribute.
     Adds compiled_files attribute with compiled sources to module object
-@return: [Observable Module] compiled module
+@return [Observable Module] compiled module
 ###
 compile_module = (config, module) ->
 

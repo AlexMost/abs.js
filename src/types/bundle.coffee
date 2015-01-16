@@ -2,7 +2,9 @@
 class Bundle
 
     ###
-    @param [Object] bundle_data contains initial data for bundle, that was parsed from recipe file. {name, modules}
+    @param [Object] bundle_data contains initial data for bundle
+    @option bundle_data [string] bundle name
+    @option bundle_data [Array<Module>] modules
     ###
     constructor: (@bundle_data) ->
 
