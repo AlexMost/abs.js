@@ -21,7 +21,7 @@ single_file_adapter =
 
     get_files: (module, config, cb) ->
         recipe_path = path.dirname config.recipe_path
-        file_real_path = path.resolve recipe_path, module.path
+        file_real_path = path.resolve recipe_path, module.get_path()
         cb null, [file_real_path]
 
 

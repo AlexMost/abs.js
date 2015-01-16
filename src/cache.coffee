@@ -2,33 +2,10 @@ Rx = require 'rx'
 fs = require 'fs'
 readFile = Rx.Node.fromNodeCallback fs.readFile
 l = require 'lodash'
+{Cache} = require './types/cache'
 
+# Is used for default filename for storing application cache.
 DEFAULT_CACHE_PATH = ".abscache"
-
-# Application cache is used for storing compiled modules and
-#   bundles data and metadata
-#
-class Cache
-    ###
-    @param [Object] data object parsed from json
-    @param [String] cache_path cache path
-    @example internal structure of data object
-      {modules: [], bundles: []}
-    ###
-    constructor: (@data, @cache_path) ->
-
-    ###
-    Reads cache data
-    @return [Object] cache data
-    ###
-    read: -> @data
-
-    ###
-    Defines wether cache data is empty
-    @return [Boolean] is cache empty
-    ###
-    isEmpty: -> l.isEmpty @data
-
 
 ###
 Factory function for creating new cache instance

@@ -1,5 +1,5 @@
 path = require 'path'
-{get_compiler, compile_file} = require '../src/module'
+{get_compiler, compile_file} = require '../src/module_process'
 compiler_mock = require '../src/compiler_mock'
 
 

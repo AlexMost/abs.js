@@ -11,7 +11,7 @@ get_bundle_sources = (modules) ->
     attribute from each module object
     ###
 
-    l.map modules, (m) -> m.casted_module
+    l.map modules, (m) -> m.get_compiled_module()
 
 
 resolve_bundle_processor = (bundle_name, config) ->

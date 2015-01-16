@@ -2,10 +2,11 @@ l = require 'lodash'
 compiler_mock = require '../src/compiler_mock'
 path = require 'path'
 {compile_module, process_modules, cast_module,
-get_is_module_changed, attach_module_files} = require '../src/module'
+get_is_module_changed, attach_module_files} = require '../src/module_process'
+{Module} = require '../src/types/module'
 
 
-mock_module1 =
+mock_module1 = new Module
     name: 'module4'
     path: './fixtures/src/test_module_compiler.mycomp'
     deps: []
@@ -16,7 +17,7 @@ mock_module1 =
         path.resolve('./test/fixtures/src/test_module_compiler.mycomp')]
 
 
-mock_module2 =
+mock_module2 = new Module
     name: 'module5'
     path: './fixtures/src/test_module_compiler.mycomp'
     deps: []
@@ -41,10 +42,10 @@ exports.test_compile_module = (test) ->
     
     module_source.subscribe(
         (module) ->
-            compiled_file = (l.first module.compiled_files)
+            compiled_file = (l.first module.get_compiled_files())
 
             test.ok(
-                module.compiled_files.length is 1
+                module.get_compiled_files().length is 1
                 "Must be only one compiled source file"
             )
 
@@ -88,15 +89,15 @@ exports.test_process_modules = (test) ->
             
             [module1, module2] = modules
 
-            mod_1_source = module1.compiled_files[0].contents.toString()
-            mod_1_compiled = module1.casted_module.compiled.toString()
+            mod_1_source = module1.get_compiled_files()[0].contents.toString()
+            mod_1_compiled = module1.get_compiled_module().compiled.toString()
 
             test.ok(
                 cast_prefix + prefix + mod_1_source is mod_1_compiled
                 "Module must be compiled")
 
-            mod_2_source = module2.compiled_files[0].contents.toString()
-            mod_2_compiled = module2.casted_module.compiled.toString()
+            mod_2_source = module2.get_compiled_files()[0].contents.toString()
+            mod_2_compiled = module2.get_compiled_module().compiled.toString()
 
             test.ok(
                 cast_prefix + prefix + mod_2_source is mod_2_compiled
@@ -132,15 +133,15 @@ exports.test_cast_module = (test) ->
     .subscribe(
         (module) ->
             test.ok(
-                module.casted_module
+                module.get_compiled_module()
                 "Must be casted module after module cast")
 
             test.ok(
-                module.compiled_files.length is 1
+                module.get_compiled_files().length is 1
                 "Must be only one compiled source file")
 
-            src_content = module.compiled_files[0].contents.toString()
-            compiled = module.casted_module.compiled.toString()
+            src_content = module.get_compiled_files()[0].contents.toString()
+            compiled = module.get_compiled_module().compiled.toString()
 
             test.ok(
                 (compiled is (cast_prefix + prefix + src_content))
@@ -154,7 +155,7 @@ exports.test_cast_module = (test) ->
 
 
 exports.test_get_is_module_changed_with_no_cache = (test) ->
-    module =
+    module = new Module
         name: "module1"
         path: "module1.coffee"
 
@@ -171,7 +172,7 @@ exports.test_get_is_module_changed_with_no_cache = (test) ->
 
 
 exports.test_get_is_module_changed_with_cache_changed = (test) ->
-    module =
+    module = new Module
         name: "module1"
         path: "module1.coffee"
 
@@ -193,7 +194,7 @@ exports.test_get_is_module_changed_with_cache_changed = (test) ->
 
 
 exports.test_get_is_module_changed_with_cache_not_changed = (test) ->
-    module =
+    module = new Module
         name: "module1"
         path: "module1.coffee"
 
@@ -215,14 +216,14 @@ exports.test_get_is_module_changed_with_cache_not_changed = (test) ->
 
 
 exports.test_attach_module_files = (test) ->
-    module =
+    module = new Module
         name: "module1"
         type: "test"
         path: "module1.coffee"
 
     adapter_mock =
         get_files: (module, config, cb) ->
-            cb null, [module.path]
+            cb null, [module.get_path()]
 
     config =
         adapters:
@@ -232,7 +233,7 @@ exports.test_attach_module_files = (test) ->
     .subscribe(
         (module) ->
             test.deepEqual(
-                module.file_paths,
+                module.get_file_paths(),
                 ["module1.coffee"],
                 "Must resolve module files correctly")
             test.done()
@@ -241,14 +242,14 @@ exports.test_attach_module_files = (test) ->
     )
 
 exports.test_attach_module_files_adapter_not_found = (test) ->
-    module =
+    module = new Module
         name: "module1"
         type: "test"
         path: "module1.coffee"
 
     adapter_mock =
         get_files: (module, config, cb) ->
-            cb null, [module.path]
+            cb null, [module.get_path()]
 
     config =
         adapters:

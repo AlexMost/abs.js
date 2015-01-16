@@ -3,9 +3,10 @@ l = require 'lodash'
 parse_config = require './config_parser'
 {get_recipe_data} = require 'recipejs'
 {attach_is_changed, process_modules, cast_module,
-attach_module_files, compile_module} = require './module'
+attach_module_files, compile_module} = require './module_process'
 {process_bundle} = require './bundle'
 {init_cache} = require './cache'
+{Module} = require './types/module'
 
 get_recipe_data_source = Rx.Node.fromNodeCallback get_recipe_data
 
@@ -15,12 +16,13 @@ any_module_changed = (modules) ->
 
 
 abs_build = (config, recipe, cache) ->
-    _attach_is_changed = l.partial(attach_is_changed, config, cache)
     _attach_file_paths = l.partial(attach_module_files, config)
+    _attach_is_changed = l.partial(attach_is_changed, config, cache)
 
     modules_source =
     Rx.Observable
     .fromArray(recipe.modules)
+    .map((m) -> new Module m)
     .flatMap(_attach_file_paths)
     .flatMap(_attach_is_changed)
 
@@ -59,7 +61,7 @@ abs = (raw_config) ->
     config = parse_config raw_config
     Rx.Observable.zip(
         get_recipe_data_source(recipe_path),
-        init_cache('.abscache'),
+        init_cache(),
         (recipe, cache) -> [recipe, cache])
     .subscribe(
         ([recipe, cache]) ->

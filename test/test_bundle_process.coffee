@@ -6,6 +6,7 @@ header = require 'gulp-header'
 {resolve_bundle_processor,
 process_bundle} = require '../src/bundle'
 File = require 'vinyl'
+{Module} = require '../src/types/module'
 
 
 exports.test_resolve_bundle_processor = (test) ->
@@ -48,9 +49,9 @@ exports.test_process_bundle = (test) ->
 
     # some module mocks with casted module attribute
     module1_contents = "module1_contents"
-    module1 =
+    module1 = new Module
         name: "module1"
-        casted_module:
+        compiled_module:
             new File({
                 cwd: "/"
                 base: "/test/"
@@ -59,9 +60,9 @@ exports.test_process_bundle = (test) ->
             })
 
     module2_contents = "module2_contents"
-    module2 =
+    module2 = new Module
         name: "module2"
-        casted_module:
+        compiled_module:
             new File({
                 cwd: "/"
                 base: "/test/"
