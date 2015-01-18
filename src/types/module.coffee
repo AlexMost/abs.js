@@ -65,7 +65,8 @@ class Module
 
     ###
     Gets compiled module.
-    @return [File] single vinyl file object with compiled and casted module files.
+    @return [File] single vinyl file object with compiled and
+        casted module files.
     ###
     get_compiled_module: -> @module_data.compiled_module
 

@@ -17,7 +17,8 @@ class Bundle
 
     ###
     Gets bundle modules.
-    @return [Array<String>] returns modules names that must be included in bundle
+    @return [Array<String>] returns modules names that must be
+        included in bundle
     ###
     get_modules: -> @bundle_data.modules or []
 

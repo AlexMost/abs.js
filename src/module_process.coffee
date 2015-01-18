@@ -16,7 +16,7 @@ default_compiler =
 Defines if module was changed.
 @param [Module] module application module.
 @param [Object] adapter module adapter.
-@param [Object] cached_module cached module.
+@param [CachedModule] cached_module cached module.
 @return [Rx.Observable Boolean] is module changed.
 ###
 get_is_module_changed = (module, adapter, cached_module) ->
@@ -42,11 +42,6 @@ get_module_files = (module, adapter, config) ->
             else
                 observer.onNext files
                 observer.onCompleted()
-
-
-get_module_from_cache = (module_name, cache_data) ->
-    return null unless cache_data.modules
-    cache_data.modules[module_name]
 
 
 ###
@@ -89,7 +84,7 @@ Attaching is_changed flag to module object.
   with 'is_changed' property attached.
 ###
 attach_is_changed = (config, cache, module) ->
-    cached_module = get_module_from_cache(module.get_name(), cache.read())
+    cached_module = cache.getCachedModule(module.get_name())
     adapter = config.adapters[module.get_type()]
 
     Rx.Observable.create (observer) ->

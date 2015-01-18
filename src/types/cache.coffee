@@ -1,4 +1,5 @@
 l = require 'lodash'
+{CachedModule} = require './cached_module'
 
 # Application cache is used for storing compiled modules and
 #   bundles data and metadata
@@ -24,5 +25,14 @@ class Cache
     ###
     isEmpty: -> l.isEmpty @data
 
+    ###
+    Gets cached module from cache if exists.
+    @param [String] module_name name of the module.
+    @return [CachedModule, null] cached module if found else null.
+    ###
+    getCachedModule: (module_name) ->
+        return null unless @isEmpty()
+        return null unless module_name of @data
+        new CachedModuleJ(@data.modules[module_name])
 
 module.exports = {Cache}
