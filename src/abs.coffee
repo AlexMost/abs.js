@@ -14,7 +14,7 @@ get_recipe_data_source = Rx.Node.fromNodeCallback get_recipe_data
 
 
 any_module_changed = (modules) ->
-    l.any modules.map (m) -> m.is_changed
+    l.any modules.map (m) -> m.is_changed()
 
 
 abs_build = (config, recipe, cache) ->
@@ -42,9 +42,9 @@ abs_build = (config, recipe, cache) ->
             .flatMap(l.partial(process_bundle, config, bundle))
             .subscribe(
                 (r) ->
-#                    console.log '------------------------------------'
-#                    console.log 'bundle', bundle.name
-#                    console.log r.contents.toString()
+                   # console.log '------------------------------------'
+                   # console.log 'bundle', bundle.name
+                   # console.log r.contents.toString()
                 (err) ->
                     console.log "[Err]", err
                     console.log err.stack

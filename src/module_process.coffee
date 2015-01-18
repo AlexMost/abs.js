@@ -63,7 +63,7 @@ Attaching file paths to module object.
   with 'file_paths' property attached.
 ###
 attach_module_files = (config, module) ->
-    adapters = config.get_adapters() 
+    adapters = config.get_adapters()
     adapter = new Adapter(adapters[module.get_type()])
 
     Rx.Observable.create (observer) ->
@@ -149,8 +149,8 @@ compile_file = (config, filepath) ->
 
 ###
 Accepts module from recipe that need to be compiled.
-    Compiles all resolved paths from module.file_paths attribute.
-    Adds compiled_files attribute with compiled sources to module object
+    Compiles all resolved paths from module.get_file_paths().
+    Sets compiled files attribute with compiled sources to module object
 @param [Config] config application config.
 @module [Module] module application module.
 @return [Observable Module] compiled module
