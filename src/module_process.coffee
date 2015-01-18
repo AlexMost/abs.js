@@ -5,6 +5,7 @@ through = require 'through2'
 {fromStream} = Rx.Node
 {run_gulp_task} = require './lib'
 l = require 'lodash'
+{Adapter} = require './types/adapter'
 
 
 default_compiler =
@@ -15,7 +16,7 @@ default_compiler =
 ###
 Defines if module was changed.
 @param [Module] module application module.
-@param [Object] adapter module adapter.
+@param [Adapter] adapter module adapter.
 @param [CachedModule] cached_module cached module.
 @return [Rx.Observable Boolean] is module changed.
 ###
@@ -36,7 +37,7 @@ get_is_module_changed = (module, adapter, cached_module) ->
 ###
 Gets module files.
 @param [Module] module.
-@param [Object] adapter.
+@param [Adapter] adapter.
 @param [Config] config application config.
 @return [Array<String>] array with module files.
 ###
@@ -62,7 +63,7 @@ Attaching file paths to module object.
 ###
 attach_module_files = (config, module) ->
     adapters = config.get_adapters() 
-    adapter = adapters[module.get_type()]
+    adapter = new Adapter(adapters[module.get_type()])
 
     Rx.Observable.create (observer) ->
         unless adapter
@@ -93,7 +94,7 @@ Attaching is_changed flag to module object.
 attach_is_changed = (config, cache, module) ->
     cached_module = cache.getCachedModule(module.get_name())
     adapters = config.get_adapters()
-    adapter = adapters[module.get_type()]
+    adapter = new Adapter(adapters[module.get_type()])
 
     Rx.Observable.create (observer) ->
         unless adapter
