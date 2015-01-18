@@ -49,21 +49,21 @@ config =
         single_file:
             cast: (stream, module) ->
                 stream
-                .pipe(concat("#{module.name}.js"))
-                .pipe(header("//single_file #{module.name}\n"))
+                .pipe(concat("#{module.get_name()}.js"))
+                .pipe(header("//single_file #{module.get_name()}\n"))
 
         commonjs_file:
             cast: (stream, module) ->
                 stream
-                .pipe(concat("#{module.name}.js"))
-                .pipe(header("//commonjs file #{module.name}\n"))
+                .pipe(concat("#{module.get_name()}.js"))
+                .pipe(header("//commonjs file #{module.get_name()}\n"))
 
     bundles:
         default:
             cast: (stream, bundle) ->
                 stream
-                .pipe(concat("#{bundle.name}.js"))
-                .pipe(header("// ---> bundle #{bundle.name}\n"))
+                .pipe(concat("#{bundle.get_name()}.js"))
+                .pipe(header("// ---> bundle #{bundle.get_name()}\n"))
                 
 
 abs(config)

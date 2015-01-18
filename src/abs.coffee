@@ -33,7 +33,7 @@ abs_build = (config, recipe, cache) ->
     recipe.bundles.map (bundle_data) ->
         bundle = new Bundle bundle_data
         compiled_modules_stream
-            .filter((m) -> m.name in bundle.get_modules())
+            .filter((m) -> m.get_name() in bundle.get_modules())
             .bufferWithCount(bundle.get_modules().length)
             .first()
             .filter(any_module_changed)
@@ -43,7 +43,6 @@ abs_build = (config, recipe, cache) ->
             .subscribe(
                 (r) ->
                    # console.log '------------------------------------'
-                   # console.log 'bundle', bundle.name
                    # console.log r.contents.toString()
                 (err) ->
                     console.log "[Err]", err
