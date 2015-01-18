@@ -6,6 +6,7 @@ through = require 'through2'
 {run_gulp_task} = require './lib'
 l = require 'lodash'
 {Adapter} = require './types/adapter'
+{Compiler} = require './types/compiler'
 
 
 default_compiler =
@@ -117,16 +118,19 @@ Resolves compiler from config by file extension.
     If compiler wasn't resolved - get's default compiler.
 @param [Config] config application config.
 @param [String] filepath.
-@return [Object] compiler with cast function for file processing.
+@return [Compiler] compiler with cast function for file processing.
 ###
 get_compiler = (config, filepath) ->
     file_ext = path.extname filepath
     compilers = l.filter config.get_compilers(), (compiler) ->
-        if l.isArray compiler.ext
-            file_ext in compiler.ext
+        ext = compiler.ext
+
+        if l.isArray ext
+            file_ext in ext
         else
-            file_ext is compiler.ext
-    (l.first compilers) or default_compiler
+            file_ext is ext
+
+    new Compiler((l.first compilers) or default_compiler)
 
 
 ###
@@ -138,7 +142,6 @@ Gets compiler with cast function and use it's
 ###
 compile_file = (config, filepath) ->
     compiler = get_compiler config, filepath
-
     (fromStream gulp.src(filepath))
     .flatMapLatest(run_gulp_task compiler.cast)
     .first()

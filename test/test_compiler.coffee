@@ -13,7 +13,10 @@ exports.test_get_compiler_for_single_ext = (test) ->
     file = "some/file/name.coffee"
 
     compiler = get_compiler mock_config, file
-    test.deepEqual compiler, {ext: ".coffee"}, "must resolve coffee compiler"
+
+    test.ok(
+        compiler.get_ext() is ".coffee",
+        "Must resolve coffee compiler")
     test.done()
 
 
@@ -26,7 +29,10 @@ exports.test_get_compiler_for_list_of_exts = (test) ->
     file = "some/file/name.coffee"
 
     compiler = get_compiler mock_config, file
-    test.deepEqual compiler, {ext: [".coffee"]}, "must resolve coffee compiler"
+    test.deepEqual(
+        compiler.get_ext(),
+        [".coffee"],
+        "must resolve coffee compiler")
     test.done()
 
 
@@ -39,7 +45,10 @@ exports.test_get_default_compiler_if_not_resolved = (test) ->
     file = "some/file/name.js"
 
     compiler = get_compiler mock_config, file
-    test.ok compiler.name is "default", "must resolve to default compiler"
+
+    test.ok(
+        compiler.get_name() is "default",
+        "Must resolve to default compiler")
     test.done()
 
 
@@ -64,7 +73,10 @@ exports.test_compile_file = (test) ->
                 (prefix + contents) is compiled
                 "file must be compiled")
             test.done()
-        (err) -> test.ok(false, err)
+        (err) ->
+
+            console.log err.stack
+            test.ok(false, err, "Must compile file")
     )
 
 
