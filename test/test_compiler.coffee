@@ -1,10 +1,11 @@
 path = require 'path'
 {get_compiler, compile_file} = require '../src/module_process'
 compiler_mock = require '../src/compiler_mock'
+{Config} = require '../src/types/config'
 
 
 exports.test_get_compiler_for_single_ext = (test) ->
-    mock_config =
+    mock_config = new Config
         compilers:
             coffee:
                 ext: ".coffee"
@@ -17,7 +18,7 @@ exports.test_get_compiler_for_single_ext = (test) ->
 
 
 exports.test_get_compiler_for_list_of_exts = (test) ->
-    mock_config =
+    mock_config = new Config
         compilers:
             coffee:
                 ext: [".coffee"]
@@ -30,7 +31,7 @@ exports.test_get_compiler_for_list_of_exts = (test) ->
 
 
 exports.test_get_default_compiler_if_not_resolved = (test) ->
-    mock_config =
+    mock_config = new Config
         compilers:
             coffee:
                 ext: ".coffee"
@@ -46,7 +47,7 @@ exports.test_compile_file = (test) ->
     prefix = "test_compile_module_file"
     file = path.resolve './test/fixtures/src/test_module_compiler.mycomp'
 
-    mock_config =
+    mock_config = new Config
         compilers: [
             name: "mycomp"
             ext: ".mycomp"

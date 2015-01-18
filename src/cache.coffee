@@ -11,7 +11,7 @@ DEFAULT_CACHE_PATH = ".abscache"
 Factory function for creating new cache instance
 
 @param [String] cache file path
-@return [Rx.Observable] observable with cache instance
+@return [Rx.Observable Cache] observable with cache instance
 ###
 init_cache = (cache_file_path) ->
     cache_file_path or= DEFAULT_CACHE_PATH
@@ -30,4 +30,4 @@ init_cache = (cache_file_path) ->
         )
 
 
-module.exports = {init_cache, Cache}
+module.exports = {init_cache}

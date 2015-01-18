@@ -8,6 +8,7 @@ attach_module_files, compile_module} = require './module_process'
 {init_cache} = require './cache'
 {Module} = require './types/module'
 {Bundle} = require './types/bundle'
+{Config} = require './types/config'
 
 get_recipe_data_source = Rx.Node.fromNodeCallback get_recipe_data
 
@@ -59,8 +60,8 @@ abs = (raw_config) ->
     # TODO: check if recipe path
     # TODO: config validation
     # TODO: make abs observable (returns bundles)
-    recipe_path = raw_config.recipe_path
-    config = parse_config raw_config
+    config = new Config raw_config
+    recipe_path = config.get_recipe_path()
     Rx.Observable.zip(
         get_recipe_data_source(recipe_path),
         init_cache(),

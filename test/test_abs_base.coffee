@@ -20,7 +20,7 @@ single_file_adapter =
         cb null, true
 
     get_files: (module, config, cb) ->
-        recipe_path = path.dirname config.recipe_path
+        recipe_path = path.dirname config.get_recipe_path()
         file_real_path = path.resolve recipe_path, module.get_path()
         cb null, [file_real_path]
 

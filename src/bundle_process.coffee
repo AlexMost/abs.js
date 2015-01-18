@@ -18,18 +18,20 @@ Resolves appropriate bundle processor
     from config. If no processor found - default
     bundle is used by default.
 @param [String] bundle_name bundle name.
-@param [Object] application config.
+@param [Config] application config.
 @return [Object] bundle processor.
 ###
 resolve_bundle_processor = (bundle_name, config) ->
-    if bundle_name of config.bundles
-        config.bundles[bundle_name]
+    bundles = config.get_bundles()
+
+    if bundle_name of bundles
+        bundles[bundle_name]
     else
-        config.bundles["default"]
+        bundles["default"]
 
 ###
 Processes bundle casts with appropriate transformations from config.
-@param [Object] config application config.
+@param [Config] config application config.
 @param [Bundle] bundle application bundle.
 @param [Array<Module>] modules array of modules.
 @return [Rx.Observable File] observable compiled file object.

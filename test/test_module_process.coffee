@@ -4,6 +4,7 @@ path = require 'path'
 {compile_module, process_modules, cast_module,
 get_is_module_changed, attach_module_files} = require '../src/module_process'
 {Module} = require '../src/types/module'
+{Config} = require '../src/types/config'
 
 
 mock_module1 = new Module
@@ -31,7 +32,7 @@ mock_module2 = new Module
 exports.test_compile_module = (test) ->
     prefix = "test_compile_module_file"
 
-    mock_config =
+    mock_config = new Config
         compilers: [
             name: "mycomp"
             ext: ".mycomp"
@@ -67,7 +68,7 @@ exports.test_process_modules = (test) ->
     prefix = "test_compile_module_file"
     cast_prefix = "prefix2_"
 
-    mock_config =
+    mock_config = new Config
         compilers: [
             name: "mycomp"
             ext: ".mycomp"
@@ -116,7 +117,7 @@ exports.test_cast_module = (test) ->
     prefix = "prefix1_"
     cast_prefix = "prefix2_"
 
-    mock_config =
+    mock_config = new Config
         compilers: [
             name: "mycomp"
             ext: ".mycomp"
@@ -225,7 +226,7 @@ exports.test_attach_module_files = (test) ->
         get_files: (module, config, cb) ->
             cb null, [module.get_path()]
 
-    config =
+    config = new Config
         adapters:
             test: adapter_mock
 
@@ -251,7 +252,7 @@ exports.test_attach_module_files_adapter_not_found = (test) ->
         get_files: (module, config, cb) ->
             cb null, [module.get_path()]
 
-    config =
+    config = new Config
         adapters:
             testtt: adapter_mock
 

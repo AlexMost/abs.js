@@ -8,10 +8,11 @@ process_bundle} = require '../src/bundle_process'
 File = require 'vinyl'
 {Module} = require '../src/types/module'
 {Bundle} = require '../src/types/bundle'
+{Config} = require '../src/types/config'
 
 
 exports.test_resolve_bundle_processor = (test) ->
-    config_mock =
+    config_mock = new Config
         bundles:
             default:
                 cast: -> "default"
@@ -38,7 +39,7 @@ exports.test_resolve_bundle_processor = (test) ->
 exports.test_process_bundle = (test) ->
     bundle_mock = new Bundle {name: "bundle1"}
 
-    config_mock =
+    config_mock = new Config
         bundles:
             default:
                 cast: (stream, bundle) ->

@@ -33,7 +33,13 @@ get_is_module_changed = (module, adapter, cached_module) ->
                 observer.onNext is_changed
                 observer.onCompleted()
 
-
+###
+Gets module files.
+@param [Module] module.
+@param [Object] adapter.
+@param [Config] config application config.
+@return [Array<String>] array with module files.
+###
 get_module_files = (module, adapter, config) ->
     Rx.Observable.create (observer) ->
         adapter.get_files module, config, (err, files) ->
@@ -49,13 +55,14 @@ Attaching file paths to module object.
   Uses config to resolve appropriate adapter for module
   and gets module file paths.
 
-@param [Object] config abs.js config.
+@param [Config] config abs.js config.
 @param [Module] module module.
 @return [Rx.Observable Module] observable with the same module
   with 'file_paths' property attached.
 ###
 attach_module_files = (config, module) ->
-    adapter = config.adapters[module.get_type()]
+    adapters = config.get_adapters() 
+    adapter = adapters[module.get_type()]
 
     Rx.Observable.create (observer) ->
         unless adapter
@@ -77,7 +84,7 @@ Attaching is_changed flag to module object.
   Uses config to resolve appropriate adapter for module
   and defines wether module is changed.
 
-@param [Object] config abs.js config.
+@param [Config] config abs.js config.
 @param [Cache] cache application cache.
 @param [Module] module module.
 @return [Rx.Observable Module] observable with the same module
@@ -85,7 +92,8 @@ Attaching is_changed flag to module object.
 ###
 attach_is_changed = (config, cache, module) ->
     cached_module = cache.getCachedModule(module.get_name())
-    adapter = config.adapters[module.get_type()]
+    adapters = config.get_adapters()
+    adapter = adapters[module.get_type()]
 
     Rx.Observable.create (observer) ->
         unless adapter
@@ -106,11 +114,13 @@ attach_is_changed = (config, cache, module) ->
 ###
 Resolves compiler from config by file extension.
     If compiler wasn't resolved - get's default compiler.
+@param [Config] config application config.
+@param [String] filepath.
 @return [Object] compiler with cast function for file processing.
 ###
-get_compiler = (config, file) ->
-    file_ext = path.extname file
-    compilers = l.filter config.compilers, (compiler) ->
+get_compiler = (config, filepath) ->
+    file_ext = path.extname filepath
+    compilers = l.filter config.get_compilers(), (compiler) ->
         if l.isArray compiler.ext
             file_ext in compiler.ext
         else
@@ -121,12 +131,14 @@ get_compiler = (config, file) ->
 ###
 Gets compiler with cast function and use it's
     cast function to compile file
+@param [Config] config application config.
+@param [String] filepath.
 @return [Rx.Observable File] with compiled vinyl File object
 ###
-compile_file = (config, file) ->
-    compiler = get_compiler config, file
+compile_file = (config, filepath) ->
+    compiler = get_compiler config, filepath
 
-    (fromStream gulp.src(file))
+    (fromStream gulp.src(filepath))
     .flatMapLatest(run_gulp_task compiler.cast)
     .first()
 
@@ -135,6 +147,8 @@ compile_file = (config, file) ->
 Accepts module from recipe that need to be compiled.
     Compiles all resolved paths from module.file_paths attribute.
     Adds compiled_files attribute with compiled sources to module object
+@param [Config] config application config.
+@module [Module] module application module.
 @return [Observable Module] compiled module
 ###
 compile_module = (config, module) ->
@@ -159,7 +173,7 @@ compile_module = (config, module) ->
 ###
 Compile module files with [Config.compilers] and casts each
     separate module with appropriate module adapter form [Config.adapters]
-@param [Object] config application config
+@param [Config] config application config
 @param [Array<Module>] modules array of modules
 @return [Rx.Observable Module] observable with compiled module
 ###
@@ -170,9 +184,16 @@ process_modules = (config, modules) ->
     .flatMap(l.partial(cast_module, config))
 
 
+###
+Executes cast function with module sources.
+@param [Config] config application config.
+@param [Module] module module.
+@return [Rx.Observable Module] observable module with compiled
+    files.
+###
 cast_module = (config, module) ->
     Rx.Observable.create (observer) ->
-        module_cast = config.modules[module.get_type()]?.cast
+        module_cast = config.get_modules()[module.get_type()]?.cast
 
         unless module_cast
             observer.onError(
