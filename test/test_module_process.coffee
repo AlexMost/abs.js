@@ -1,8 +1,9 @@
 l = require 'lodash'
 compiler_mock = require '../src/compiler_mock'
 path = require 'path'
-{compile_module, process_modules, cast_module,
-get_is_module_changed, attach_module_files} = require '../src/module_process'
+{process_modules, cast_module, get_is_module_changed,
+attach_module_files} = require '../src/module_process'
+{compile_module} = require '../src/compiler_process'
 {Module} = require '../src/types/module'
 {Config} = require '../src/types/config'
 
@@ -106,9 +107,7 @@ exports.test_process_modules = (test) ->
 
             test.done()
         (err) ->
-
-            console.log err.stack
-            test.ok false, "must not fail"
+            test.ok false, "must not fail #{err}"
             test.done()
     )
 
